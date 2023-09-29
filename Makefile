@@ -8,10 +8,11 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	make -C libft
-	ar -rc $(NAME) $^ libft/*.o
+	cp libft/libft.a $@
+	ar -rc $@ $^
 
 %.o: %.c
-	cc $(CFLAGS) -c $< -o $@
+	cc $(CFLAGS) -c $< -o $@ 
 
 clean:
 	rm -f $(OBJS)
