@@ -1,2 +1,6 @@
 .DS_Store
 *.o
+*.a
+a.out
+test.c
+ft_printf_tester

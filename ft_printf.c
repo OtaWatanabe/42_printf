@@ -6,66 +6,108 @@
 /*   By: otawatanabe <otawatanabe@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/08 02:07:05 by otawatanabe       #+#    #+#             */
-/*   Updated: 2023/08/27 05:11:03 by otawatanabe      ###   ########.fr       */
+/*   Updated: 2023/09/28 23:31:10 by otawatanabe      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-char * print_16(unsigned int u)
+int print_16(unsigned long u, int c)
 {
-	char s[9];
-	size_t i;
+	char s[16];
+	int		i;
+	int		j;
 
-	i = 8;
-	while (i--) 
+	i = 16;
+	while (u && i--)
 	{
-		s[i] = "0123456789ABCDEF"[u % 16];
+		s[i] = "0123456789abcdef"[u % 16];
 		u /= 16;
 	}
-	s[8] = 0;
-	return (s);
+	if (i == 16)
+		s[--i] = '0';
+	if (c == 'p')
+		return (write(1, "0x", 2) + write(1, s + i, 16 - i));
+	if (c == 'X')
+	{
+		j = i;
+		while (j++ < 16)
+			s[j-1] = ft_toupper(s[j-1]);
+	}
+	return (write(1, s + i, 16 - i));
 }
 
-va_list check_specifier(va_list ap, char c)
+int	putnbr_count(long n)
 {
+	long	i;
+	char	c;
+	int		r;
+
+	i = n;
+	r = 0;
+	if (n < 0)
+	{
+		r += write(1, "-", 1);
+		i = -i;
+	}
+	if (i > 9)
+		r += putnbr_count((long)(i / 10));
+	c = '0' + i % 10;
+	return (r + write(1, &c, 1));
+}
+
+int	check_specifier(va_list * ap, char c)
+{
+	char	*s;
+
 	if (c == '%')
-		ft_putchar_fd(c, 1);
+		return ((int)write(1, &c, 1));
 	else if (c == 'c')
-		ft_putchar_fd(va_arg(ap, char), 1);
+	{
+		c = va_arg(*ap, int);
+		return ((int)write(1, &c, 1));
+	}
 	else if (c == 's')
-		ft_putstr_fd(va_arg(ap, char *), 1);
-	else if (c == 'p' || c == 'x')
-		ft_putstr_fd(print_16(va_arg(ap, unsigned int)), 1);
+	{
+		s = va_arg(*ap, char *);
+		if (s)
+			return (write(1, s, ft_strlen(s)));
+		return (write(1, "(null)", 6));
+	}
+	else if (c == 'p')
+		return (print_16(va_arg(*ap, unsigned long), c));
+	else if (c == 'x' || c == 'X')
+		return (print_16(va_arg(*ap, unsigned), c));
 	else if (c == 'd' || c == 'i')
-		ft_putnbr_fd(va_arg(ap, int), 1);
-	else if (c == 'u')
-		ft_putstr_fd(va_arg(ap, unsigned int), 1);
-	else if (c == 'X');
-		ft_putstr_fd(ft_toupper(print_16(va_arg(ap, unsigned int))), 1);
-	return (ap);
+		return (putnbr_count(va_arg(*ap, int)));
+	return (putnbr_count(va_arg(*ap, unsigned int)));
 }
 
 int ft_printf(const char * fmt, ...)
 {
     va_list	ap;
     char	*s;
+	int		r;
 
     va_start(ap, fmt);
-	s = fmt;
-    while (fmt)
+	s = (char *) fmt;
+	r = 0;
+    while (*s)
     {
-		if (*fmt != '%')
+		fmt = ft_strchr(s, '%');
+		if (fmt == NULL)
 		{
-			fmt = ft_strchr(fmt, '%');
-			if (fmt == NULL)
-				write(1, s, ft_strlen(fmt));
-			write(1, s, fmt - s);
+			r += write(1, s, ft_strlen(s));
+			break;
 		}
-        else if (*(++fmt) == '%')
-			ft_putchar_fd(*fmt++, 1);
-		else
-			ap = check_specifier(ap, *fmt);
-		s = ++fmt;
+		r += write(1, s, fmt - s);
+		r += check_specifier(&ap, *(fmt + 1));
+		s = (char *)fmt + 2;
 	}
+	va_end(ap);
+	return ((int)r);
 }
+
+// int main() {
+// 	ft_printf("%d", ft_printf("l%dll%c", 33, '\n'));
+// }

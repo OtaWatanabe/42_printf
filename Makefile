@@ -1,5 +1,6 @@
 CFLAGS = -Wall -Wextra -Werror
 CC = gcc
+LIB = libft/libft.a
 SRCS = ft_printf.c
 NAME = libftprintf.a
 OBJS = $(SRCS:.c=.o)
@@ -7,7 +8,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	make -C libft
-	ar -rc $(NAME) $^
+	ar -rc $(NAME) $^ libft/*.o
 
 %.o: %.c
 	cc $(CFLAGS) -c $< -o $@
