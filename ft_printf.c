@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: otawatanabe <otawatanabe@student.42.fr>    +#+  +:+       +#+        */
+/*   By: owatanab <owatanab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/08 02:07:05 by otawatanabe       #+#    #+#             */
-/*   Updated: 2023/09/28 23:31:10 by otawatanabe      ###   ########.fr       */
+/*   Updated: 2023/09/29 17:21:30 by owatanab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int print_16(unsigned long u, int c)
+int	print_16(unsigned long u, int c)
 {
-	char s[16];
+	char	s[16];
 	int		i;
 	int		j;
 
@@ -32,7 +32,7 @@ int print_16(unsigned long u, int c)
 	{
 		j = i;
 		while (j++ < 16)
-			s[j-1] = ft_toupper(s[j-1]);
+			s[j - 1] = ft_toupper(s[j - 1]);
 	}
 	return (write(1, s + i, 16 - i));
 }
@@ -56,7 +56,7 @@ int	putnbr_count(long n)
 	return (r + write(1, &c, 1));
 }
 
-int	check_specifier(va_list * ap, char c)
+int	check_specifier(va_list *ap, char c)
 {
 	char	*s;
 
@@ -83,22 +83,22 @@ int	check_specifier(va_list * ap, char c)
 	return (putnbr_count(va_arg(*ap, unsigned int)));
 }
 
-int ft_printf(const char * fmt, ...)
+int	ft_printf(const char *fmt, ...)
 {
-    va_list	ap;
-    char	*s;
+	va_list	ap;
+	char	*s;
 	int		r;
 
-    va_start(ap, fmt);
+	va_start(ap, fmt);
 	s = (char *) fmt;
 	r = 0;
-    while (*s)
-    {
+	while (*s)
+	{
 		fmt = ft_strchr(s, '%');
 		if (fmt == NULL)
 		{
 			r += write(1, s, ft_strlen(s));
-			break;
+			break ;
 		}
 		r += write(1, s, fmt - s);
 		r += check_specifier(&ap, *(fmt + 1));
