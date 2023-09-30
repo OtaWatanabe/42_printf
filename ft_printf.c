@@ -6,7 +6,7 @@
 /*   By: owatanab <owatanab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/08 02:07:05 by otawatanabe       #+#    #+#             */
-/*   Updated: 2023/09/30 10:07:01 by owatanab         ###   ########.fr       */
+/*   Updated: 2023/09/30 12:15:26 by owatanab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ ssize_t	putnbr_count(long n)
 	return (r + write(1, &c, 1));
 }
 
-ssize_t	check_specifier(va_list *ap, char c)
+long	check_specifier(va_list *ap, char c)
 {
 	char	*s;
 
@@ -82,7 +82,7 @@ ssize_t	check_specifier(va_list *ap, char c)
 		return (putnbr_count(va_arg(*ap, int)));
 	else if (c == 'u')
 		return (putnbr_count(va_arg(*ap, unsigned int)));
-	return (0);
+	return (LONG_MIN);
 }
 
 int	ft_printf(const char *fmt, ...)
@@ -94,7 +94,7 @@ int	ft_printf(const char *fmt, ...)
 	va_start(ap, fmt);
 	s = (char *) fmt;
 	r = 0;
-	while (*s != 0)
+	while (r >= 0 && *s != 0)
 	{
 		fmt = ft_strchr(s, '%');
 		if (fmt == NULL)
@@ -104,12 +104,10 @@ int	ft_printf(const char *fmt, ...)
 		}
 		r += write(1, s, fmt - s);
 		r += check_specifier(&ap, *(fmt + 1));
-		if (*(fmt + 1) == 0)
-			break ;
 		s = (char *)fmt + 2;
 	}
 	va_end(ap);
-	if (r > INT_MAX)
+	if (r > INT_MAX || r < 0)
 		return (-1);
 	return ((int)r);
 }

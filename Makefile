@@ -8,7 +8,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	make -C libft
-	cp libft/libft.a $@
+	cp $(LIB) $@
 	ar -rc $@ $^
 
 %.o: %.c
@@ -16,9 +16,11 @@ $(NAME): $(OBJS)
 
 clean:
 	rm -f $(OBJS)
+	make clean -C libft
 
 fclean: clean
 	rm -f $(NAME)
+	make fclean -C libft
 
 re: fclean all
 
