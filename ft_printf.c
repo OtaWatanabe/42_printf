@@ -6,13 +6,13 @@
 /*   By: owatanab <owatanab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/08 02:07:05 by otawatanabe       #+#    #+#             */
-/*   Updated: 2023/09/29 20:25:24 by owatanab         ###   ########.fr       */
+/*   Updated: 2023/09/30 10:07:01 by owatanab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	print_16(unsigned long u, int c)
+ssize_t	print_16(unsigned long u, int c)
 {
 	char	s[16];
 	int		i;
@@ -37,11 +37,11 @@ int	print_16(unsigned long u, int c)
 	return (write(1, s + i, 16 - i));
 }
 
-int	putnbr_count(long n)
+ssize_t	putnbr_count(long n)
 {
 	long	i;
 	char	c;
-	int		r;
+	ssize_t	r;
 
 	i = n;
 	r = 0;
@@ -51,21 +51,21 @@ int	putnbr_count(long n)
 		i = -i;
 	}
 	if (i > 9)
-		r += putnbr_count((long)(i / 10));
+		r += putnbr_count(i / 10);
 	c = '0' + i % 10;
 	return (r + write(1, &c, 1));
 }
 
-int	check_specifier(va_list *ap, char c)
+ssize_t	check_specifier(va_list *ap, char c)
 {
 	char	*s;
 
 	if (c == '%')
-		return ((int)write(1, &c, 1));
+		return (write(1, &c, 1));
 	else if (c == 'c')
 	{
 		c = va_arg(*ap, int);
-		return ((int)write(1, &c, 1));
+		return (write(1, &c, 1));
 	}
 	else if (c == 's')
 	{
@@ -113,7 +113,3 @@ int	ft_printf(const char *fmt, ...)
 		return (-1);
 	return ((int)r);
 }
-
-// // int main() {
-// 	ft_printf("%d", ft_printf("l%dll%c", str1, str2));
-// // }
